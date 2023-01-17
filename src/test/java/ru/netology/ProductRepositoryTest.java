@@ -12,12 +12,13 @@ public class ProductRepositoryTest {
     Product item6 = new Smartphone(70, "Galaxy S22 Ultra", 94_499, "Samsung");
     Product item7 = new Smartphone(22, "Poco X4 Pro", 22_770, "Poco");
     Product item8 = new Smartphone(53, "Xiaomi 12 Pro", 42_990, "Xiaomi");
+    Product item9 = new Smartphone(19, "Xiaomi 12 Pro", 42_990, "Xiaomi");
 
     ProductRepository repo = new ProductRepository();
 
 
     @Test
-    public void saveProductTest() {
+    public void saveProductsWithDifferentId() {
         repo.saveProduct(item1);
         repo.saveProduct(item2);
         repo.saveProduct(item5);
@@ -28,11 +29,22 @@ public class ProductRepositoryTest {
 
         Assertions.assertArrayEquals(expected, actual);
 
-
     }
 
     @Test
-    public void removeToIdTest() {
+    public void saveProductsWithTheSameId() {
+        repo.saveProduct(item1);
+
+        Assertions.assertThrows(AlreadyExistsException.class, () -> {
+            repo.saveProduct(item9);
+        });
+
+    }
+
+
+
+    @Test
+    public void removeByIdProductInStock() {
         repo.saveProduct(item3);
         repo.saveProduct(item4);
         repo.saveProduct(item6);
@@ -45,6 +57,36 @@ public class ProductRepositoryTest {
         Product[] actual = repo.getProducts();
 
         Assertions.assertArrayEquals(expected, actual);
+
+    }
+    @Test
+    public void removeByIdProductIsMissing() {
+        repo.saveProduct(item1);
+        repo.saveProduct(item2);
+        repo.saveProduct(item3);
+        repo.saveProduct(item4);
+
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            repo.removeById(item8.getId());
+        });
+
+    }
+
+
+
+    @Test
+    public void findById(){
+        repo.saveProduct(item1);
+        repo.saveProduct(item2);
+        repo.saveProduct(item5);
+        repo.saveProduct(item8);
+
+        Product expected = item1;
+        Product actual = repo.findById(19);
+
+        Assertions.assertEquals(expected, actual);
+
 
     }
 
